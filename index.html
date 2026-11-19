@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Taller AR - Caritas con Emociones</title>
+  <title>Taller AR - Tarjetas Geométricas</title>
   
   <!-- Librerías: A-Frame y AR.js -->
   <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
@@ -28,19 +28,17 @@
       justify-content: center;
       gap: 10px;
       margin-top: 5px;
-      flex-wrap: wrap;
     }
     button {
-      padding: 10px 15px;
-      font-size: 14px;
+      padding: 12px 20px;
+      font-size: 15px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
     }
     #btn-tamano { background: #007bff; color: white; }
-    #btn-emocion { background: #ff9800; color: white; }
-    #btn-efecto { background: #28a745; color: white; }
+    #btn-holograma { background: #8a2be2; color: white; }
   </style>
 </head>
 <body>
@@ -48,28 +46,22 @@
   <!-- ESCENA DE REALIDAD AUMENTADA -->
   <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false;">
 
-    <!-- Tarjeta A: marcador Hiro → Carita Azul -->
+    <!-- Tarjeta A: marcador Hiro → Cubo -->
     <a-marker preset="hiro" id="marcadorA">
-      <!-- Contenedor para el efecto de rotación (opcional) -->
-      <a-entity id="contenedorCubo" rotation="0 0 0">
-        <a-box id="caraA" color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d"
-               src="https://i.ibb.co/3s6KqK0/face-happy.png" 
-               animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear; startEvents: rotar">
-        </a-box>
-        <!-- Texto flotante de estado -->
-        <a-text id="textoA" value=":)" color="white" position="0 1.2 0" align="center" scale="2 2 2"></a-text>
-      </a-entity>
+      <a-box color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d" id="objetoA" 
+             material="opacity: 1; transparent: true; wireframe: false; emissive: #000000;">
+        <!-- Partículas alrededor del cubo (ocultas al inicio) -->
+        <a-entity id="particulasA" visible="false" particle-system="preset: dust; color: #00ffff; size: 0.05; velocity: 1; particleCount: 50;"></a-entity>
+      </a-box>
     </a-marker>
 
-    <!-- Tarjeta B: marcador Kanji → Carita Roja -->
+    <!-- Tarjeta B: marcador Kanji → Esfera -->
     <a-marker preset="kanji" id="marcadorB">
-      <a-entity id="contenedorEsfera" rotation="0 0 0">
-        <a-sphere id="caraB" color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d"
-                  src="https://i.ibb.co/3s6KqK0/face-happy.png" 
-                  animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear; startEvents: rotar">
-        </a-sphere>
-        <a-text id="textoB" value=":)" color="white" position="0 1.2 0" align="center" scale="2 2 2"></a-text>
-      </a-entity>
+      <a-sphere color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d" id="objetoB"
+                material="opacity: 1; transparent: true; wireframe: false; emissive: #000000;">
+        <!-- Partículas alrededor de la esfera (ocultas al inicio) -->
+        <a-entity id="particulasB" visible="false" particle-system="preset: dust; color: #ff00ff; size: 0.05; velocity: 1; particleCount: 50;"></a-entity>
+      </a-sphere>
     </a-marker>
 
     <!-- Cámara -->
@@ -81,17 +73,15 @@
   <div id="ui">
     <p><strong>Tu Nombre Aquí</strong></p>
     <p id="estado-tamano">Tamaño: Normal</p>
-    <p id="estado-emocion">Emoción: Feliz</p>
     <div class="botones-container">
-      <button id="btn-tamano">Cambiar Tamaño</button>
-      <button id="btn-emocion">Cambiar Emoción</button>
-      <button id="btn-efecto">Activar Efecto</button>
+      <button id="btn-tamano">Cambiar tamaño</button>
+      <button id="btn-holograma">Activar Holograma</button>
     </div>
   </div>
 
   <!-- LÓGICA -->
   <script>
-    // --- 1. Botón de Tamaño ---
+    // --- Lógica del botón de tamaño (Mantenido de tu código original) ---
     let ampliado = false;
     const botonTamano = document.querySelector('#btn-tamano');
     const etiquetaTamano = document.querySelector('#estado-tamano');
@@ -108,66 +98,37 @@
       etiquetaTamano.textContent = nuevoTexto;
     });
 
-    // --- 2. Botón de Emoción ---
-    let esFeliz = true;
-    const botonEmocion = document.querySelector('#btn-emocion');
-    const etiquetaEmocion = document.querySelector('#estado-emocion');
-    const caraA = document.querySelector('#caraA');
-    const caraB = document.querySelector('#caraB');
-    const textoA = document.querySelector('#textoA');
-    const textoB = document.querySelector('#textoB');
+    // --- Lógica del botón de Holograma (Nuevo Efecto) ---
+    let hologramaActivo = false;
+    const botonHolograma = document.querySelector('#btn-holograma');
+    const objetoA = document.querySelector('#objetoA');
+    const objetoB = document.querySelector('#objetoB');
+    const particulasA = document.querySelector('#particulasA');
+    const particulasB = document.querySelector('#particulasB');
 
-    // URLs de las texturas de las caritas (puedes cambiarlas)
-    const urlFeliz = "https://i.ibb.co/3s6KqK0/face-happy.png";
-    const urlEnojada = "https://i.ibb.co/6P9z9XQ/face-angry.png"; 
+    botonHolograma.addEventListener('click', () => {
+      hologramaActivo = !hologramaActivo;
 
-    botonEmocion.addEventListener('click', () => {
-      esFeliz = !esFeliz;
-      
-      if (esFeliz) {
-        caraA.setAttribute('src', urlFeliz);
-        caraB.setAttribute('src', urlFeliz);
-        textoA.setAttribute('value', ':)');
-        textoB.setAttribute('value', ':)');
-        etiquetaEmocion.textContent = 'Emoción: Feliz';
-        etiquetaEmocion.style.color = 'lightgreen';
+      if (hologramaActivo) {
+        // Activar efecto Holograma: Hacerlos semitransparentes, con brillo neón y mostrar partículas
+        objetoA.setAttribute('material', 'opacity: 0.6; transparent: true; wireframe: true; emissive: #0000ff; emissiveIntensity: 2;');
+        objetoB.setAttribute('material', 'opacity: 0.6; transparent: true; wireframe: true; emissive: #ff0000; emissiveIntensity: 2;');
+        
+        particulasA.setAttribute('visible', 'true');
+        particulasB.setAttribute('visible', 'true');
+        
+        botonHolograma.textContent = 'Desactivar Holograma';
+        botonHolograma.style.background = '#dc3545'; // Cambia a rojo
       } else {
-        caraA.setAttribute('src', urlEnojada);
-        caraB.setAttribute('src', urlEnojada);
-        textoA.setAttribute('value', '>_<');
-        textoB.setAttribute('value', '>_<');
-        etiquetaEmocion.textContent = 'Emoción: Enojado';
-        etiquetaEmocion.style.color = 'salmon';
-      }
-    });
-
-    // --- 3. Botón de Efecto (Rotación) ---
-    let efectoActivado = false;
-    const botonEfecto = document.querySelector('#btn-efecto');
-    const contenedorCubo = document.querySelector('#contenedorCubo');
-    const contenedorEsfera = document.querySelector('#contenedorEsfera');
-
-    botonEfecto.addEventListener('click', () => {
-      efectoActivado = !efectoActivado;
-      
-      if (efectoActivado) {
-        caraA.emit('rotar');
-        caraB.emit('rotar');
-        botonEfecto.textContent = 'Detener Efecto';
-        botonEfecto.style.background = '#dc3545';
-      } else {
-        // Detener y reiniciar
-        caraA.removeAttribute('animation');
-        caraB.removeAttribute('animation');
+        // Desactivar efecto Holograma: Volver a la normalidad
+        objetoA.setAttribute('material', 'opacity: 1; transparent: true; wireframe: false; emissive: #000000;');
+        objetoB.setAttribute('material', 'opacity: 1; transparent: true; wireframe: false; emissive: #000000;');
         
-        caraA.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear; startEvents: rotar');
-        caraB.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear; startEvents: rotar');
+        particulasA.setAttribute('visible', 'false');
+        particulasB.setAttribute('visible', 'false');
         
-        caraA.setAttribute('rotation', '0 0 0');
-        caraB.setAttribute('rotation', '0 0 0');
-        
-        botonEfecto.textContent = 'Activar Efecto';
-        botonEfecto.style.background = '#28a745';
+        botonHolograma.textContent = 'Activar Holograma';
+        botonHolograma.style.background = '#8a2be2'; // Vuelve a morado
       }
     });
   </script>
