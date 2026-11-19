@@ -21,15 +21,22 @@
       text-shadow: 1px 1px 3px black;
     }
     #ui p { margin: 4px 0; font-size: 16px; }
-    #btn-tamano {
+    .botones-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    button {
       padding: 12px 24px;
       font-size: 16px;
       border: none;
       border-radius: 8px;
-      background: #007bff;
-      color: white;
       cursor: pointer;
+      font-weight: bold;
     }
+    #btn-tamano { background: #007bff; color: white; }
+    #btn-efecto { background: #28a745; color: white; }
   </style>
 </head>
 <body>
@@ -37,14 +44,18 @@
   <!-- ESCENA DE REALIDAD AUMENTADA -->
   <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false;">
 
-    <!-- Tarjeta A: marcador Hiro → Cubo azul -->
+    <!-- Tarjeta A: marcador Hiro → Cubo azul con animación de rotación -->
     <a-marker preset="hiro" id="marcadorA">
-      <a-box color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d"></a-box>
+      <a-box color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d" id="miCubo"
+             animation="property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear; startEvents: iniciarRotacion">
+      </a-box>
     </a-marker>
 
-    <!-- Tarjeta B: marcador Kanji → Esfera roja -->
+    <!-- Tarjeta B: marcador Kanji → Esfera roja con animación de rotación -->
     <a-marker preset="kanji" id="marcadorB">
-      <a-sphere color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d"></a-sphere>
+      <a-sphere color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d" id="miEsfera"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear; startEvents: iniciarRotacion">
+      </a-sphere>
     </a-marker>
 
     <!-- Cámara necesaria para A-Frame -->
@@ -52,21 +63,25 @@
 
   </a-scene>
 
-  <!-- INTERFAZ: nombre, estado y botón -->
+  <!-- INTERFAZ: nombre, estado y botones -->
   <div id="ui">
     <p><strong>Tu Nombre Aquí</strong></p>
     <p id="estado-tamano">Normal</p>
-    <button id="btn-tamano">Cambiar tamaño</button>
+    <div class="botones-container">
+      <button id="btn-tamano">Cambiar tamaño</button>
+      <button id="btn-efecto">Activar Efecto</button>
+    </div>
   </div>
 
-  <!-- LÓGICA DEL BOTÓN -->
+  <!-- LÓGICA DE LOS BOTONES -->
   <script>
+    // --- Lógica del botón de tamaño ---
     let ampliado = false;
-    const boton = document.querySelector('#btn-tamano');
+    const botonTamano = document.querySelector('#btn-tamano');
     const etiqueta = document.querySelector('#estado-tamano');
     const figuras = document.querySelectorAll('.figura3d');
 
-    boton.addEventListener('click', () => {
+    botonTamano.addEventListener('click', () => {
       ampliado = !ampliado;
       const nuevaEscala = ampliado ? '1.5 1.5 1.5' : '1 1 1';
       const nuevoTexto = ampliado ? 'Ampliado' : 'Normal';
@@ -76,6 +91,39 @@
       });
 
       etiqueta.textContent = nuevoTexto;
+    });
+
+    // --- Lógica del botón de efecto (Rotación) ---
+    let efectoActivado = false;
+    const botonEfecto = document.querySelector('#btn-efecto');
+    const miCubo = document.querySelector('#miCubo');
+    const miEsfera = document.querySelector('#miEsfera');
+
+    botonEfecto.addEventListener('click', () => {
+      efectoActivado = !efectoActivado;
+      
+      if (efectoActivado) {
+        // Iniciar la animación de rotación
+        miCubo.emit('iniciarRotacion');
+        miEsfera.emit('iniciarRotacion');
+        botonEfecto.textContent = 'Detener Efecto';
+        botonEfecto.style.background = '#dc3545'; // Cambia a rojo
+      } else {
+        // Detener la animación y devolverlos a su posición original
+        miCubo.removeAttribute('animation');
+        miEsfera.removeAttribute('animation');
+        
+        // Restaurar las animaciones para que se puedan volver a activar
+        miCubo.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear; startEvents: iniciarRotacion');
+        miEsfera.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear; startEvents: iniciarRotacion');
+        
+        // Devolverlos a la rotación 0
+        miCubo.setAttribute('rotation', '0 0 0');
+        miEsfera.setAttribute('rotation', '0 0 0');
+        
+        botonEfecto.textContent = 'Activar Efecto';
+        botonEfecto.style.background = '#28a745'; // Cambia a verde
+      }
     });
   </script>
 
