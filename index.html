@@ -13,33 +13,46 @@
 
   <style>
     body { margin: 0; overflow: hidden; font-family: sans-serif; }
+    
+    /* Panel de interfaz mejorado */
     #ui {
       position: fixed;
-      bottom: 20px;
-      width: 100%;
+      bottom: 30px;
+      width: 90%;
+      left: 5%;
       text-align: center;
       z-index: 999;
       color: white;
       text-shadow: 1px 1px 3px black;
+      background: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+      padding: 15px;
+      border-radius: 15px;
+      box-sizing: border-box;
     }
-    #ui p { margin: 4px 0; font-size: 16px; }
+    
+    #ui p { margin: 5px 0; font-size: 18px; }
+    
     .botones-container {
       display: flex;
-      justify-content: center;
+      flex-direction: column; /* Apila los botones verticalmente */
       gap: 10px;
-      margin-top: 10px;
-      flex-wrap: wrap;
+      margin-top: 15px;
     }
+    
     button {
-      padding: 10px 20px;
-      font-size: 14px;
+      width: 100%; /* Ocupa todo el ancho disponible */
+      padding: 15px;
+      font-size: 18px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     }
+    
+    /* Colores de los botones */
     #btn-tamano { background: #007bff; color: white; }
-    #btn-magia { background: #6f42c1; color: white; } /* Botón Morado Mágico */
+    #btn-magia { background: #6f42c1; color: white; }
   </style>
 </head>
 <body>
@@ -49,12 +62,8 @@
 
     <!-- TARJETA A: HIRO -> CUBO AZUL -->
     <a-marker preset="hiro" id="marcadorA">
-      <!-- El cubo con animación de pulso (latido) -->
       <a-box color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d" id="miCubo">
-        <!-- Animación oculta que inicia con el evento -->
         <a-animation attribute="scale" to="1.2 1.2 1.2" direction="alternate" dur="500" repeat="indefinite" begin="iniciarMagia"></a-animation>
-        
-        <!-- Partículas mágicas orbitando (Ocultas por defecto) -->
         <a-entity id="particulasCubo" visible="false">
           <a-sphere color="cyan" radius="0.05" position="0.8 0 0">
             <a-animation attribute="position" from="0.8 0 0" to="0 -0.8 0.8" dur="2000" repeat="indefinite"></a-animation>
@@ -68,12 +77,8 @@
 
     <!-- TARJETA B: KANJI -> ESFERA ROJA -->
     <a-marker preset="kanji" id="marcadorB">
-      <!-- La esfera con animación de pulso -->
       <a-sphere color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d" id="miEsfera">
-        <!-- Animación oculta que inicia con el evento -->
         <a-animation attribute="scale" to="1.2 1.2 1.2" direction="alternate" dur="500" repeat="indefinite" begin="iniciarMagia"></a-animation>
-        
-        <!-- Partículas mágicas orbitando (Ocultas por defecto) -->
         <a-entity id="particulasEsfera" visible="false">
           <a-sphere color="magenta" radius="0.05" position="0 0.8 0">
             <a-animation attribute="position" from="0 0.8 0" to="0.8 0 0.8" dur="2200" repeat="indefinite"></a-animation>
@@ -85,12 +90,10 @@
       </a-sphere>
     </a-marker>
 
-    <!-- Cámara necesaria para A-Frame -->
     <a-entity camera="fov: 100;"></a-entity>
-
   </a-scene>
 
-  <!-- INTERFAZ: nombre, estado y botones -->
+  <!-- INTERFAZ MEJORADA -->
   <div id="ui">
     <p><strong>Tu Nombre Aquí</strong></p>
     <p id="estado-tamano">Normal</p>
@@ -100,9 +103,8 @@
     </div>
   </div>
 
-  <!-- LÓGICA DE LOS BOTONES -->
+  <!-- LÓGICA -->
   <script>
-    // --- Lógica del botón de tamaño ---
     let ampliado = false;
     const botonTamano = document.querySelector('#btn-tamano');
     const etiqueta = document.querySelector('#estado-tamano');
@@ -120,7 +122,6 @@
       etiqueta.textContent = nuevoTexto;
     });
 
-    // --- Lógica del botón Mágico ---
     let magiaActivada = false;
     const botonMagia = document.querySelector('#btn-magia');
     const miCubo = document.querySelector('#miCubo');
@@ -132,31 +133,21 @@
       magiaActivada = !magiaActivada;
 
       if (magiaActivada) {
-        // Encender pulso (latido)
         miCubo.emit('iniciarMagia');
         miEsfera.emit('iniciarMagia');
-        
-        // Mostrar partículas
         particulasCubo.setAttribute('visible', 'true');
         particulasEsfera.setAttribute('visible', 'true');
-        
         botonMagia.textContent = 'Detener Magia';
-        botonMagia.style.background = '#dc3545'; // Rojo
+        botonMagia.style.background = '#dc3545';
       } else {
-        // Apagar pulso (recargando la página lógicamente para detener animación)
         miCubo.setAttribute('scale', ampliado ? '1.5 1.5 1.5' : '1 1 1');
         miEsfera.setAttribute('scale', ampliado ? '1.5 1.5 1.5' : '1 1 1');
-        
-        // Ocultar partículas
         particulasCubo.setAttribute('visible', 'false');
         particulasEsfera.setAttribute('visible', 'false');
-        
-        // Reiniciar animaciones para la próxima vez
         miCubo.setAttribute('animation__pulso', '');
         miEsfera.setAttribute('animation__pulso', '');
-        
         botonMagia.textContent = '✨ Activar Magia ✨';
-        botonMagia.style.background = '#6f42c1'; // Morado
+        botonMagia.style.background = '#6f42c1';
       }
     });
   </script>
