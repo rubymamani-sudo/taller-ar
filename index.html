@@ -12,13 +12,19 @@
     /* Pantalla de Inicio */
     #inicio {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: #1a1a2e; color: white; display: flex; flex-direction: column;
+      background: #0f0f1a; color: white; display: flex; flex-direction: column;
       justify-content: center; align-items: center; z-index: 1000; text-align: center;
     }
-    #inicio h1 { color: #00ffff; margin-bottom: 10px; }
+    #inicio h1 { color: #00ffff; margin-bottom: 5px; z-index: 10; }
+    #inicio p { color: #cccccc; margin-bottom: 20px; z-index: 10; }
     #btn-entrar {
       padding: 15px 30px; font-size: 18px; background: #007bff; color: white;
-      border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
+      border: none; border-radius: 8px; cursor: pointer; font-weight: bold; z-index: 10;
+    }
+
+    /* Escena 3D de fondo en la pantalla de inicio */
+    #escena-fondo {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
     }
 
     /* Interfaz de la Cámara (oculta al inicio) */
@@ -32,20 +38,41 @@
       background: #007bff; color: white; cursor: pointer;
     }
     
-    /* Escena oculta al inicio */
     #escena-ar { display: none; }
   </style>
 </head>
 <body>
 
-  <!-- PANTALLA DE INICIO -->
+  <!-- PANTALLA DE INICIO CON FIGURAS 3D DE FONDO -->
   <div id="inicio">
+    
+    <!-- Escena 3D que se ve de fondo (sin cámara) -->
+    <a-scene id="escena-fondo" embedded vr-mode-ui="enabled: false;" renderer="antialias: true; alpha: true;">
+      <!-- Un cubo girando -->
+      <a-box color="#00ffff" position="-1 0.5 -3" rotation="0 45 0" scale="0.8 0.8 0.8"
+             animation="property: rotation; to: 0 405 0; loop: true; dur: 4000; easing: linear;"></a-box>
+      
+      <!-- Una esfera girando -->
+      <a-sphere color="#ff00ff" position="1 -0.5 -3" radius="0.6"
+                animation="property: rotation; to: 360 360 0; loop: true; dur: 5000; easing: linear;"></a-sphere>
+      
+      <!-- Un toro (dona) más alejado -->
+      <a-torus color="#ffff00" position="0 1 -5" radius="0.4" radius-tubular="0.1"
+               animation="property: rotation; to: 360 0 0; loop: true; dur: 6000; easing: linear;"></a-torus>
+
+      <!-- Iluminación -->
+      <a-entity light="type: ambient; color: #ffffff; intensity: 0.5"></a-entity>
+      <a-entity light="type: directional; color: #ffffff; intensity: 1" position="2 3 4"></a-entity>
+      <a-entity camera position="0 0 0"></a-entity>
+    </a-scene>
+
+    <!-- Textos y botón encima de las figuras 3D -->
     <h1>Realidad Aumentada</h1>
     <p>Taller de Tarjetas Geométricas</p>
     <button id="btn-entrar">Comenzar Experiencia</button>
   </div>
 
-  <!-- ESCENA DE REALIDAD AUMENTADA -->
+  <!-- ESCENA DE REALIDAD AUMENTADA (CÁMARA) -->
   <a-scene id="escena-ar" embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false;">
     <a-marker preset="hiro" id="marcadorA">
       <a-box color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d"></a-box>
@@ -56,7 +83,7 @@
     <a-entity camera="fov: 100;"></a-entity>
   </a-scene>
 
-  <!-- INTERFAZ -->
+  <!-- INTERFAZ DE LA CÁMARA -->
   <div id="ui">
     <p><strong>Tu Nombre Aquí</strong></p>
     <p id="estado-tamano">Normal</p>
