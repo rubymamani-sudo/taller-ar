@@ -6,9 +6,11 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Taller AR - Tarjetas Geométricas</title>
+  
   <!-- Librerías: A-Frame y AR.js -->
   <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
   <style>
     body { margin: 0; overflow: hidden; font-family: sans-serif; }
     #ui {
@@ -24,19 +26,20 @@
     .botones-container {
       display: flex;
       justify-content: center;
-      gap: 15px;
+      gap: 10px;
       margin-top: 10px;
+      flex-wrap: wrap;
     }
     button {
-      padding: 12px 24px;
-      font-size: 16px;
+      padding: 10px 20px;
+      font-size: 14px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
     }
     #btn-tamano { background: #007bff; color: white; }
-    #btn-efecto { background: #28a745; color: white; }
+    #btn-magia { background: #6f42c1; color: white; } /* Botón Morado Mágico */
   </style>
 </head>
 <body>
@@ -44,17 +47,41 @@
   <!-- ESCENA DE REALIDAD AUMENTADA -->
   <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false;">
 
-    <!-- Tarjeta A: marcador Hiro → Cubo azul con animación de rotación -->
+    <!-- TARJETA A: HIRO -> CUBO AZUL -->
     <a-marker preset="hiro" id="marcadorA">
-      <a-box color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d" id="miCubo"
-             animation="property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear; startEvents: iniciarRotacion">
+      <!-- El cubo con animación de pulso (latido) -->
+      <a-box color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d" id="miCubo">
+        <!-- Animación oculta que inicia con el evento -->
+        <a-animation attribute="scale" to="1.2 1.2 1.2" direction="alternate" dur="500" repeat="indefinite" begin="iniciarMagia"></a-animation>
+        
+        <!-- Partículas mágicas orbitando (Ocultas por defecto) -->
+        <a-entity id="particulasCubo" visible="false">
+          <a-sphere color="cyan" radius="0.05" position="0.8 0 0">
+            <a-animation attribute="position" from="0.8 0 0" to="0 -0.8 0.8" dur="2000" repeat="indefinite"></a-animation>
+          </a-sphere>
+          <a-sphere color="yellow" radius="0.05" position="-0.8 0 0">
+            <a-animation attribute="position" from="-0.8 0 0" to="0 0.8 -0.8" dur="1800" repeat="indefinite"></a-animation>
+          </a-sphere>
+        </a-entity>
       </a-box>
     </a-marker>
 
-    <!-- Tarjeta B: marcador Kanji → Esfera roja con animación de rotación -->
+    <!-- TARJETA B: KANJI -> ESFERA ROJA -->
     <a-marker preset="kanji" id="marcadorB">
-      <a-sphere color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d" id="miEsfera"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear; startEvents: iniciarRotacion">
+      <!-- La esfera con animación de pulso -->
+      <a-sphere color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d" id="miEsfera">
+        <!-- Animación oculta que inicia con el evento -->
+        <a-animation attribute="scale" to="1.2 1.2 1.2" direction="alternate" dur="500" repeat="indefinite" begin="iniciarMagia"></a-animation>
+        
+        <!-- Partículas mágicas orbitando (Ocultas por defecto) -->
+        <a-entity id="particulasEsfera" visible="false">
+          <a-sphere color="magenta" radius="0.05" position="0 0.8 0">
+            <a-animation attribute="position" from="0 0.8 0" to="0.8 0 0.8" dur="2200" repeat="indefinite"></a-animation>
+          </a-sphere>
+          <a-sphere color="white" radius="0.05" position="0 -0.8 0">
+            <a-animation attribute="position" from="0 -0.8 0" to="-0.8 0 -0.8" dur="1700" repeat="indefinite"></a-animation>
+          </a-sphere>
+        </a-entity>
       </a-sphere>
     </a-marker>
 
@@ -69,7 +96,7 @@
     <p id="estado-tamano">Normal</p>
     <div class="botones-container">
       <button id="btn-tamano">Cambiar tamaño</button>
-      <button id="btn-efecto">Activar Efecto</button>
+      <button id="btn-magia">✨ Activar Magia ✨</button>
     </div>
   </div>
 
@@ -93,36 +120,43 @@
       etiqueta.textContent = nuevoTexto;
     });
 
-    // --- Lógica del botón de efecto (Rotación) ---
-    let efectoActivado = false;
-    const botonEfecto = document.querySelector('#btn-efecto');
+    // --- Lógica del botón Mágico ---
+    let magiaActivada = false;
+    const botonMagia = document.querySelector('#btn-magia');
     const miCubo = document.querySelector('#miCubo');
     const miEsfera = document.querySelector('#miEsfera');
+    const particulasCubo = document.querySelector('#particulasCubo');
+    const particulasEsfera = document.querySelector('#particulasEsfera');
 
-    botonEfecto.addEventListener('click', () => {
-      efectoActivado = !efectoActivado;
-      
-      if (efectoActivado) {
-        // Iniciar la animación de rotación
-        miCubo.emit('iniciarRotacion');
-        miEsfera.emit('iniciarRotacion');
-        botonEfecto.textContent = 'Detener Efecto';
-        botonEfecto.style.background = '#dc3545'; // Cambia a rojo
+    botonMagia.addEventListener('click', () => {
+      magiaActivada = !magiaActivada;
+
+      if (magiaActivada) {
+        // Encender pulso (latido)
+        miCubo.emit('iniciarMagia');
+        miEsfera.emit('iniciarMagia');
+        
+        // Mostrar partículas
+        particulasCubo.setAttribute('visible', 'true');
+        particulasEsfera.setAttribute('visible', 'true');
+        
+        botonMagia.textContent = 'Detener Magia';
+        botonMagia.style.background = '#dc3545'; // Rojo
       } else {
-        // Detener la animación y devolverlos a su posición original
-        miCubo.removeAttribute('animation');
-        miEsfera.removeAttribute('animation');
+        // Apagar pulso (recargando la página lógicamente para detener animación)
+        miCubo.setAttribute('scale', ampliado ? '1.5 1.5 1.5' : '1 1 1');
+        miEsfera.setAttribute('scale', ampliado ? '1.5 1.5 1.5' : '1 1 1');
         
-        // Restaurar las animaciones para que se puedan volver a activar
-        miCubo.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear; startEvents: iniciarRotacion');
-        miEsfera.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear; startEvents: iniciarRotacion');
+        // Ocultar partículas
+        particulasCubo.setAttribute('visible', 'false');
+        particulasEsfera.setAttribute('visible', 'false');
         
-        // Devolverlos a la rotación 0
-        miCubo.setAttribute('rotation', '0 0 0');
-        miEsfera.setAttribute('rotation', '0 0 0');
+        // Reiniciar animaciones para la próxima vez
+        miCubo.setAttribute('animation__pulso', '');
+        miEsfera.setAttribute('animation__pulso', '');
         
-        botonEfecto.textContent = 'Activar Efecto';
-        botonEfecto.style.background = '#28a745'; // Cambia a verde
+        botonMagia.textContent = '✨ Activar Magia ✨';
+        botonMagia.style.background = '#6f42c1'; // Morado
       }
     });
   </script>
