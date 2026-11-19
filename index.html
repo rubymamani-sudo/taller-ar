@@ -15,27 +15,31 @@
     body { margin: 0; overflow: hidden; font-family: sans-serif; }
     #ui {
       position: fixed;
-      bottom: 15px;
+      bottom: 10px;
       width: 100%;
       text-align: center;
       z-index: 999;
       color: white;
       text-shadow: 1px 1px 3px black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    #ui p { margin: 4px 0; font-size: 15px; }
+    #ui p { margin: 2px 0; font-size: 15px; }
     .botones-container {
       display: flex;
-      justify-content: center;
       gap: 10px;
       margin-top: 5px;
+      margin-bottom: 10px;
     }
     button {
-      padding: 12px 20px;
-      font-size: 15px;
+      padding: 12px 15px;
+      font-size: 14px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
     }
     #btn-tamano { background: #007bff; color: white; }
     #btn-holograma { background: #8a2be2; color: white; }
@@ -50,18 +54,34 @@
     <a-marker preset="hiro" id="marcadorA">
       <a-box color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d" id="objetoA" 
              material="opacity: 1; transparent: true; wireframe: false; emissive: #000000;">
-        <!-- Partículas alrededor del cubo (ocultas al inicio) -->
         <a-entity id="particulasA" visible="false" particle-system="preset: dust; color: #00ffff; size: 0.05; velocity: 1; particleCount: 50;"></a-entity>
       </a-box>
     </a-marker>
 
-    <!-- Tarjeta B: marcador Kanji → Esfera -->
+    <!-- Tarjeta B: marcador Kanji → Esfera con PANEL INFORMATIVO -->
     <a-marker preset="kanji" id="marcadorB">
+      
+      <!-- La esfera -->
       <a-sphere color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d" id="objetoB"
                 material="opacity: 1; transparent: true; wireframe: false; emissive: #000000;">
-        <!-- Partículas alrededor de la esfera (ocultas al inicio) -->
         <a-entity id="particulasB" visible="false" particle-system="preset: dust; color: #ff00ff; size: 0.05; velocity: 1; particleCount: 50;"></a-entity>
       </a-sphere>
+
+      <!-- PANEL INFORMATIVO 3D AL LADO DERECHO DEL KANJI -->
+      <a-entity position="0.8 0.6 0" rotation="0 -20 0">
+        <!-- Fondo del cuadro -->
+        <a-plane color="#1a1a2e" width="1.2" height="0.9" opacity="0.85" transparent="true"></a-plane>
+        <!-- Borde del cuadro -->
+        <a-plane color="#8a2be2" width="1.25" height="0.95" position="0 0 -0.01"></a-plane>
+        
+        <!-- Texto del cuadro -->
+        <a-text value="TARJETA KANJI" color="#ff00ff" align="center" width="2.5" position="0 0.3 0.01"></a-text>
+        <a-text value="Marcador oficial de AR.js" color="#ffffff" align="center" width="1.8" position="0 0.1 0.01"></a-text>
+        <a-text value="Figura: Esfera 3D" color="#ffffff" align="center" width="1.8" position="0 -0.05 0.01"></a-text>
+        <a-text value="Sigue la posicion de la tarjeta" color="#aaaaaa" align="center" width="1.6" position="0 -0.2 0.01"></a-text>
+        <a-text value="Toca los botones para interactuar" color="#aaaaaa" align="center" width="1.6" position="0 -0.35 0.01"></a-text>
+      </a-entity>
+
     </a-marker>
 
     <!-- Cámara -->
@@ -81,7 +101,7 @@
 
   <!-- LÓGICA -->
   <script>
-    // --- Lógica del botón de tamaño (Mantenido de tu código original) ---
+    // --- 1. Lógica del botón de Tamaño ---
     let ampliado = false;
     const botonTamano = document.querySelector('#btn-tamano');
     const etiquetaTamano = document.querySelector('#estado-tamano');
@@ -98,7 +118,7 @@
       etiquetaTamano.textContent = nuevoTexto;
     });
 
-    // --- Lógica del botón de Holograma (Nuevo Efecto) ---
+    // --- 2. Lógica del botón de Holograma ---
     let hologramaActivo = false;
     const botonHolograma = document.querySelector('#btn-holograma');
     const objetoA = document.querySelector('#objetoA');
@@ -110,7 +130,6 @@
       hologramaActivo = !hologramaActivo;
 
       if (hologramaActivo) {
-        // Activar efecto Holograma: Hacerlos semitransparentes, con brillo neón y mostrar partículas
         objetoA.setAttribute('material', 'opacity: 0.6; transparent: true; wireframe: true; emissive: #0000ff; emissiveIntensity: 2;');
         objetoB.setAttribute('material', 'opacity: 0.6; transparent: true; wireframe: true; emissive: #ff0000; emissiveIntensity: 2;');
         
@@ -118,9 +137,8 @@
         particulasB.setAttribute('visible', 'true');
         
         botonHolograma.textContent = 'Desactivar Holograma';
-        botonHolograma.style.background = '#dc3545'; // Cambia a rojo
+        botonHolograma.style.background = '#dc3545';
       } else {
-        // Desactivar efecto Holograma: Volver a la normalidad
         objetoA.setAttribute('material', 'opacity: 1; transparent: true; wireframe: false; emissive: #000000;');
         objetoB.setAttribute('material', 'opacity: 1; transparent: true; wireframe: false; emissive: #000000;');
         
@@ -128,7 +146,7 @@
         particulasB.setAttribute('visible', 'false');
         
         botonHolograma.textContent = 'Activar Holograma';
-        botonHolograma.style.background = '#8a2be2'; // Vuelve a morado
+        botonHolograma.style.background = '#8a2be2';
       }
     });
   </script>
