@@ -1,42 +1,93 @@
-<style>
-  html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-  body { margin: 0; overflow: hidden; font-family: sans-serif; }
-
-  #ui {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: max(16px, env(safe-area-inset-bottom));
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 9999;
-    color: white;
-    text-shadow: 1px 1px 3px black;
-    pointer-events: none;
-  }
-
-  #ui p { margin: 4px 0; font-size: 16px; }
-
-  #btn-tamano {
-    pointer-events: auto;
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    background: #007bff;
-    color: white;
-    cursor: pointer;
-  }
-
-  /* Ajuste para horizontal (pantalla ancha y baja) */
-  @media (orientation: landscape) {
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Taller AR - Tarjetas Geométricas</title>
+  <!-- Librerías: A-Frame y AR.js -->
+  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <style>
+    html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+    body { margin: 0; overflow: hidden; font-family: sans-serif; }
     #ui {
-      bottom: max(10px, env(safe-area-inset-bottom));
-      flex-direction: row;      /* texto y botón en fila */
-      gap: 16px;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: max(24px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 9999;
+      color: white;
+      text-shadow: 1px 1px 3px black;
+      pointer-events: none;
     }
-    #ui p { margin: 0; font-size: 14px; }
-    #btn-tamano { padding: 8px 16px; font-size: 14px; }
-  }
-</style>
+    #ui p { margin: 4px 0; font-size: 16px; }
+    #btn-tamano {
+      pointer-events: auto;
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ESCENA DE REALIDAD AUMENTADA -->
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best; maxDetectionRate: 60; sourceWidth: 1280; sourceHeight: 960; displayWidth: 1280; displayHeight: 960;" vr-mode-ui="enabled: false;">
+
+    <!-- Tarjeta A: marcador Hiro → Cubo azul -->
+    <a-marker preset="hiro" id="marcadorA" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="2" minConfidence="0.4">
+      <a-box color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d"></a-box>
+    </a-marker>
+
+    <!-- Tarjeta B: marcador Kanji → Esfera roja -->
+    <a-marker preset="kanji" id="marcadorB" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="2" minConfidence="0.4">
+      <a-sphere color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d"></a-sphere>
+    </a-marker>
+
+    <!-- Tarjeta C: marcador Koi → Pirámide rosada -->
+    <a-marker type="pattern" url="pattern-koi.patt" id="marcadorC" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="2" minConfidence="0.4">
+      <a-cone color="hotpink" segments-radial="4" radius-bottom="0.5" radius-top="0" height="1" position="0 0.5 0" scale="1 1 1" class="figura3d"></a-cone>
+    </a-marker>
+
+    <!-- Cámara necesaria para A-Frame -->
+    <a-entity camera="fov: 100;"></a-entity>
+
+  </a-scene>
+
+  <!-- INTERFAZ: nombre, estado y botón -->
+  <div id="ui">
+    <p id="estado-tamano">Tamaño normal</p>
+    <button id="btn-tamano">Cambiar tamaño</button>
+  </div>
+
+  <!-- LÓGICA DEL BOTÓN -->
+  <script>
+    let ampliado = false;
+    const boton = document.querySelector('#btn-tamano');
+    const etiqueta = document.querySelector('#estado-tamano');
+    const figuras = document.querySelectorAll('.figura3d');
+
+    boton.addEventListener('click', () => {
+      ampliado = !ampliado;
+      const nuevaEscala = ampliado ? '1.5 1.5 1.5' : '1 1 1';
+      const nuevoTexto = ampliado ? 'Ampliado' : 'Normal';
+
+      figuras.forEach(figura => {
+        figura.setAttribute('scale', nuevaEscala);
+      });
+
+      etiqueta.textContent = nuevoTexto;
+    });
+  </script>
+
+</body>
+</html>
