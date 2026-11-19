@@ -5,54 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Taller AR - Tarjetas Geométricas</title>
+  <title>Taller AR - Caritas con Emociones</title>
   
   <!-- Librerías: A-Frame y AR.js -->
   <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-
+  
   <style>
     body { margin: 0; overflow: hidden; font-family: sans-serif; }
-    
-    /* Panel de interfaz mejorado */
     #ui {
       position: fixed;
-      bottom: 30px;
-      width: 90%;
-      left: 5%;
+      bottom: 15px;
+      width: 100%;
       text-align: center;
       z-index: 999;
       color: white;
       text-shadow: 1px 1px 3px black;
-      background: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
-      padding: 15px;
-      border-radius: 15px;
-      box-sizing: border-box;
     }
-    
-    #ui p { margin: 5px 0; font-size: 18px; }
-    
+    #ui p { margin: 4px 0; font-size: 15px; }
     .botones-container {
       display: flex;
-      flex-direction: column; /* Apila los botones verticalmente */
+      justify-content: center;
       gap: 10px;
-      margin-top: 15px;
+      margin-top: 5px;
+      flex-wrap: wrap;
     }
-    
     button {
-      width: 100%; /* Ocupa todo el ancho disponible */
-      padding: 15px;
-      font-size: 18px;
+      padding: 10px 15px;
+      font-size: 14px;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     }
-    
-    /* Colores de los botones */
     #btn-tamano { background: #007bff; color: white; }
-    #btn-magia { background: #6f42c1; color: white; }
+    #btn-emocion { background: #ff9800; color: white; }
+    #btn-efecto { background: #28a745; color: white; }
   </style>
 </head>
 <body>
@@ -60,94 +48,126 @@
   <!-- ESCENA DE REALIDAD AUMENTADA -->
   <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false;">
 
-    <!-- TARJETA A: HIRO -> CUBO AZUL -->
+    <!-- Tarjeta A: marcador Hiro → Carita Azul -->
     <a-marker preset="hiro" id="marcadorA">
-      <a-box color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d" id="miCubo">
-        <a-animation attribute="scale" to="1.2 1.2 1.2" direction="alternate" dur="500" repeat="indefinite" begin="iniciarMagia"></a-animation>
-        <a-entity id="particulasCubo" visible="false">
-          <a-sphere color="cyan" radius="0.05" position="0.8 0 0">
-            <a-animation attribute="position" from="0.8 0 0" to="0 -0.8 0.8" dur="2000" repeat="indefinite"></a-animation>
-          </a-sphere>
-          <a-sphere color="yellow" radius="0.05" position="-0.8 0 0">
-            <a-animation attribute="position" from="-0.8 0 0" to="0 0.8 -0.8" dur="1800" repeat="indefinite"></a-animation>
-          </a-sphere>
-        </a-entity>
-      </a-box>
+      <!-- Contenedor para el efecto de rotación (opcional) -->
+      <a-entity id="contenedorCubo" rotation="0 0 0">
+        <a-box id="caraA" color="blue" position="0 0.5 0" scale="1 1 1" class="figura3d"
+               src="https://i.ibb.co/3s6KqK0/face-happy.png" 
+               animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear; startEvents: rotar">
+        </a-box>
+        <!-- Texto flotante de estado -->
+        <a-text id="textoA" value=":)" color="white" position="0 1.2 0" align="center" scale="2 2 2"></a-text>
+      </a-entity>
     </a-marker>
 
-    <!-- TARJETA B: KANJI -> ESFERA ROJA -->
+    <!-- Tarjeta B: marcador Kanji → Carita Roja -->
     <a-marker preset="kanji" id="marcadorB">
-      <a-sphere color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d" id="miEsfera">
-        <a-animation attribute="scale" to="1.2 1.2 1.2" direction="alternate" dur="500" repeat="indefinite" begin="iniciarMagia"></a-animation>
-        <a-entity id="particulasEsfera" visible="false">
-          <a-sphere color="magenta" radius="0.05" position="0 0.8 0">
-            <a-animation attribute="position" from="0 0.8 0" to="0.8 0 0.8" dur="2200" repeat="indefinite"></a-animation>
-          </a-sphere>
-          <a-sphere color="white" radius="0.05" position="0 -0.8 0">
-            <a-animation attribute="position" from="0 -0.8 0" to="-0.8 0 -0.8" dur="1700" repeat="indefinite"></a-animation>
-          </a-sphere>
-        </a-entity>
-      </a-sphere>
+      <a-entity id="contenedorEsfera" rotation="0 0 0">
+        <a-sphere id="caraB" color="red" radius="0.5" position="0 0.5 0" scale="1 1 1" class="figura3d"
+                  src="https://i.ibb.co/3s6KqK0/face-happy.png" 
+                  animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear; startEvents: rotar">
+        </a-sphere>
+        <a-text id="textoB" value=":)" color="white" position="0 1.2 0" align="center" scale="2 2 2"></a-text>
+      </a-entity>
     </a-marker>
 
+    <!-- Cámara -->
     <a-entity camera="fov: 100;"></a-entity>
+
   </a-scene>
 
-  <!-- INTERFAZ MEJORADA -->
+  <!-- INTERFAZ -->
   <div id="ui">
     <p><strong>Tu Nombre Aquí</strong></p>
-    <p id="estado-tamano">Normal</p>
+    <p id="estado-tamano">Tamaño: Normal</p>
+    <p id="estado-emocion">Emoción: Feliz</p>
     <div class="botones-container">
-      <button id="btn-tamano">Cambiar tamaño</button>
-      <button id="btn-magia">✨ Activar Magia ✨</button>
+      <button id="btn-tamano">Cambiar Tamaño</button>
+      <button id="btn-emocion">Cambiar Emoción</button>
+      <button id="btn-efecto">Activar Efecto</button>
     </div>
   </div>
 
   <!-- LÓGICA -->
   <script>
+    // --- 1. Botón de Tamaño ---
     let ampliado = false;
     const botonTamano = document.querySelector('#btn-tamano');
-    const etiqueta = document.querySelector('#estado-tamano');
+    const etiquetaTamano = document.querySelector('#estado-tamano');
     const figuras = document.querySelectorAll('.figura3d');
 
     botonTamano.addEventListener('click', () => {
       ampliado = !ampliado;
       const nuevaEscala = ampliado ? '1.5 1.5 1.5' : '1 1 1';
-      const nuevoTexto = ampliado ? 'Ampliado' : 'Normal';
+      const nuevoTexto = ampliado ? 'Tamaño: Ampliado' : 'Tamaño: Normal';
 
       figuras.forEach(figura => {
         figura.setAttribute('scale', nuevaEscala);
       });
-
-      etiqueta.textContent = nuevoTexto;
+      etiquetaTamano.textContent = nuevoTexto;
     });
 
-    let magiaActivada = false;
-    const botonMagia = document.querySelector('#btn-magia');
-    const miCubo = document.querySelector('#miCubo');
-    const miEsfera = document.querySelector('#miEsfera');
-    const particulasCubo = document.querySelector('#particulasCubo');
-    const particulasEsfera = document.querySelector('#particulasEsfera');
+    // --- 2. Botón de Emoción ---
+    let esFeliz = true;
+    const botonEmocion = document.querySelector('#btn-emocion');
+    const etiquetaEmocion = document.querySelector('#estado-emocion');
+    const caraA = document.querySelector('#caraA');
+    const caraB = document.querySelector('#caraB');
+    const textoA = document.querySelector('#textoA');
+    const textoB = document.querySelector('#textoB');
 
-    botonMagia.addEventListener('click', () => {
-      magiaActivada = !magiaActivada;
+    // URLs de las texturas de las caritas (puedes cambiarlas)
+    const urlFeliz = "https://i.ibb.co/3s6KqK0/face-happy.png";
+    const urlEnojada = "https://i.ibb.co/6P9z9XQ/face-angry.png"; 
 
-      if (magiaActivada) {
-        miCubo.emit('iniciarMagia');
-        miEsfera.emit('iniciarMagia');
-        particulasCubo.setAttribute('visible', 'true');
-        particulasEsfera.setAttribute('visible', 'true');
-        botonMagia.textContent = 'Detener Magia';
-        botonMagia.style.background = '#dc3545';
+    botonEmocion.addEventListener('click', () => {
+      esFeliz = !esFeliz;
+      
+      if (esFeliz) {
+        caraA.setAttribute('src', urlFeliz);
+        caraB.setAttribute('src', urlFeliz);
+        textoA.setAttribute('value', ':)');
+        textoB.setAttribute('value', ':)');
+        etiquetaEmocion.textContent = 'Emoción: Feliz';
+        etiquetaEmocion.style.color = 'lightgreen';
       } else {
-        miCubo.setAttribute('scale', ampliado ? '1.5 1.5 1.5' : '1 1 1');
-        miEsfera.setAttribute('scale', ampliado ? '1.5 1.5 1.5' : '1 1 1');
-        particulasCubo.setAttribute('visible', 'false');
-        particulasEsfera.setAttribute('visible', 'false');
-        miCubo.setAttribute('animation__pulso', '');
-        miEsfera.setAttribute('animation__pulso', '');
-        botonMagia.textContent = '✨ Activar Magia ✨';
-        botonMagia.style.background = '#6f42c1';
+        caraA.setAttribute('src', urlEnojada);
+        caraB.setAttribute('src', urlEnojada);
+        textoA.setAttribute('value', '>_<');
+        textoB.setAttribute('value', '>_<');
+        etiquetaEmocion.textContent = 'Emoción: Enojado';
+        etiquetaEmocion.style.color = 'salmon';
+      }
+    });
+
+    // --- 3. Botón de Efecto (Rotación) ---
+    let efectoActivado = false;
+    const botonEfecto = document.querySelector('#btn-efecto');
+    const contenedorCubo = document.querySelector('#contenedorCubo');
+    const contenedorEsfera = document.querySelector('#contenedorEsfera');
+
+    botonEfecto.addEventListener('click', () => {
+      efectoActivado = !efectoActivado;
+      
+      if (efectoActivado) {
+        caraA.emit('rotar');
+        caraB.emit('rotar');
+        botonEfecto.textContent = 'Detener Efecto';
+        botonEfecto.style.background = '#dc3545';
+      } else {
+        // Detener y reiniciar
+        caraA.removeAttribute('animation');
+        caraB.removeAttribute('animation');
+        
+        caraA.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear; startEvents: rotar');
+        caraB.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear; startEvents: rotar');
+        
+        caraA.setAttribute('rotation', '0 0 0');
+        caraB.setAttribute('rotation', '0 0 0');
+        
+        botonEfecto.textContent = 'Activar Efecto';
+        botonEfecto.style.background = '#28a745';
       }
     });
   </script>
